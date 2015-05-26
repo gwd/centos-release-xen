@@ -5,13 +5,13 @@ Version: 6
 Release: 5.el6.centos
 License: GPL
 Group: System Environment/Base
-Source1: xen-kernel
-Source2: CentOS-Xen.repo
-Source3: grub-bootxen.sh
+Source1: CentOS-Xen.repo
+Source2: VirtSIG-Xen.repo.%{?rhel}
+Source3: xen-kernel
+Source4: grub-bootxen.sh
 URL: http://wiki.centos.org/QaWiki/Xen4
 
 Provides: centos-release-xen
-Requires: centos-release = 6
 
 BuildRoot: %{_tmppath}/centos-release-xen-root
 
@@ -24,9 +24,11 @@ mkdir -p $RPM_BUILD_ROOT/etc
 mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
+install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 744 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
+install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
+
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -40,6 +42,7 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue May 26 2015 George Dunlap <george.dunlap@eu.citrix.com> - 6-5.el6.centos
 - Use plain files rather than a tarball for easier source tracking
+- Add Virt SIG repos (disabled by default)
 
 * Mon Oct 20 2014 Johnny Hughes <johnny@centos.org> - 6-4.el6.centos
 - shifted /etc/sysconfig/xen-kernel to centos-xen-release
