@@ -7,6 +7,7 @@
 if [ -e /etc/sysconfig/xen-kernel ]; then
   . /etc/sysconfig/xen-kernel
 else
+  echo "No /etc/sysconfig/xen-kernel, nothing to do."
   exit 0
 fi
 
@@ -24,15 +25,20 @@ function config_add
     fi
 }
 
+if [ "$XEN_KERNEL_ARGS" == "" ]; then
+  XEN_KERNEL_ARGS="dom0_mem=1024M,max:1024M cpuinfo com1=115200,8n1 console=com1,tty loglvl=all guest_loglvl=all"
+fi
+
 if [ -e /etc/default/grub ] ; then
     config_add /etc/default/grub GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT "console=hvc0 earlyprintk=xen nomodeset"
-    config_add /etc/default/grub GRUB_CMDLINE_XEN_DEFAULT "watchdog cpuinfo com1=115200,8n1 console=com1,tty loglvl=all guest_loglvl=all"
+    config_add /etc/default/grub GRUB_CMDLINE_XEN_DEFAULT "$XEN_KERNEL_ARGS"
 fi
 
 #convert BOOT_XEN_AS_DEFAULT to lowercase
 BOOT_XEN_AS_DEFAULT=${BOOT_XEN_AS_DEFAULT,,}
 
 if [ "$BOOT_XEN_AS_DEFAULT" == "no" ]; then
+  echo "BOOT_XEN_AS_DEFAULT is 'no', nothing more to do."
   exit 0
 fi
 
@@ -43,27 +49,36 @@ fi
 
 #check for the xen.gz file
 if [ ! -e /boot/xen.gz ]; then
+  echo "No /boot/xen.gz, nothing more to do."
   exit 0
 fi 
 
-if [ "$XEN_KERNEL_MBARGS" == "" ]; then
-  XEN_KERNEL_MBARGS="--mbargs=dom0_mem=1024M,max:1024M loglvl=all guest_loglvl=all"
-fi
+XEN_KERNEL_MBARGS="--mbargs=$XEN_KERNEL_ARGS"
 
-if [ "$kver" = "" ]; then 
-  default=$(grubby --default-kernel)
-  kver=$(expr $default : '.*vmlinuz-\(.*\)')
-  initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
-else
-  default="/boot/vmlinuz-$kver"
-  initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
-fi
+grub1Config=$(readlink /etc/grub.conf)
+grub2Config=$(readlink /etc/grub2.cfg)
 
-[ -n "$kver" ] || exit 0
-
-new-kernel-pkg --install --package kernel --multiboot=/boot/xen.gz "$XEN_KERNEL_MBARGS" --initrdfile=$initrd $kver
-
-if which grub2-set-default >& /dev/null ; then
+if [ -n "$grub2Config" ] ; then
+    echo "Regenerating grub2 config"
+    grub2-mkconfig -o $grub2Config
+    echo "Setting Xen as the default"
     grub2-set-default 0
+elif [ -n "$grub1Config" ] ; then
+    echo "Updating grub config"
+    if [ "$kver" = "" ]; then 
+	default=$(grubby --default-kernel)
+	kver=$(expr $default : '.*vmlinuz-\(.*\)')
+	initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
+    else
+	default="/boot/vmlinuz-$kver"
+	initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
+    fi
+
+    [ -n "$kver" ] || exit 0
+
+    new-kernel-pkg --install --package kernel --multiboot=/boot/xen.gz "$XEN_KERNEL_MBARGS" --initrdfile=$initrd $kver
+else
+    echo "Don't know how to update bootloader."
 fi
+
 exit $?

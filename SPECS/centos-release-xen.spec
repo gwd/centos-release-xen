@@ -1,11 +1,11 @@
 Summary: CentOS6 Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
-Version: 6
-Release: 5.el6.centos
+Version: 7
+Release: 1%{?dist}
 License: GPL
 Group: System Environment/Base
-Source1: CentOS-Xen.repo
+Source1: CentOS-Xen.repo.%{?rhel}
 Source2: VirtSIG-Xen.repo.%{?rhel}
 Source3: xen-kernel
 Source4: grub-bootxen.sh
@@ -24,10 +24,10 @@ mkdir -p $RPM_BUILD_ROOT/etc
 mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 744 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}
-install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
+install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/VirtSIG-Xen.repo
+install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
+install -m 744 %{SOURCE4} $RPM_BUILD_ROOT/%{_bindir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -40,7 +40,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue May 26 2015 George Dunlap <george.dunlap@eu.citrix.com> - 6-5.el6.centos
+* Tue May 26 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-1.el6.centos
 - Use plain files rather than a tarball for easier source tracking
 - Add Virt SIG repos (disabled by default)
 
