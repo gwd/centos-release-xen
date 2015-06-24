@@ -1,8 +1,8 @@
-Summary: CentOS6 Xen Support repo configs
+Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 1%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group: System Environment/Base
 Source1: CentOS-Xen.repo.%{?rhel}
@@ -15,8 +15,10 @@ Provides: centos-release-xen
 
 BuildRoot: %{_tmppath}/centos-release-xen-root
 
+ExclusiveArch: x86_64
+
 %description
-yum Configs and some docs on the Xen-4 stack included in CentOS-6 
+yum Configs and some docs on the Xen-4 stack included in CentOS
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -40,7 +42,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Tue May 26 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-1.el6.centos
+* Wed Jun 24 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-4.centos
+- Update GPG key name
+- Fix link following bug \in grub-bootxen
+
+* Wed Jun 17 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-3.centos
+- Update core C7 repos
+
+* Tue May 26 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-2.el6.centos
 - Use plain files rather than a tarball for easier source tracking
 - Add Virt SIG repos (disabled by default)
 

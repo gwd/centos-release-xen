@@ -55,8 +55,8 @@ fi
 
 XEN_KERNEL_MBARGS="--mbargs=$XEN_KERNEL_ARGS"
 
-grub1Config=$(readlink /etc/grub.conf)
-grub2Config=$(readlink /etc/grub2.cfg)
+grub1Config=$(readlink -f /etc/grub.conf)
+grub2Config=$(readlink -f /etc/grub2.cfg)
 
 if [ -n "$grub2Config" ] ; then
     echo "Regenerating grub2 config"
