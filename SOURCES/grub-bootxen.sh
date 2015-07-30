@@ -58,12 +58,12 @@ XEN_KERNEL_MBARGS="--mbargs=$XEN_KERNEL_ARGS"
 grub1Config=$(readlink -f /etc/grub.conf)
 grub2Config=$(readlink -f /etc/grub2.cfg)
 
-if [ -n "$grub2Config" ] ; then
+if [ -e "$grub2Config" ] ; then
     echo "Regenerating grub2 config"
     grub2-mkconfig -o $grub2Config
     echo "Setting Xen as the default"
     grub2-set-default 0
-elif [ -n "$grub1Config" ] ; then
+elif [ -e "$grub1Config" ] ; then
     echo "Updating grub config"
     if [ "$kver" = "" ]; then 
 	default=$(grubby --default-kernel)

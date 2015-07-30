@@ -2,7 +2,7 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPL
 Group: System Environment/Base
 Source1: CentOS-Xen.repo.%{?rhel}
@@ -42,6 +42,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 30 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-5.centos
+- Fix grub-bootxen.sh script
+
 * Wed Jun 24 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-4.centos
 - Update GPG key name
 - Fix link following bug \in grub-bootxen
