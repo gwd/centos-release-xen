@@ -2,7 +2,7 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 5%{?dist}
+Release: 7%{?dist}
 License: GPL
 Group: System Environment/Base
 Source1: CentOS-Xen.repo.%{?rhel}
@@ -42,6 +42,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 08 2015 George Dunlap <george.dunlap@citrix.com> - 7-7.centos
+- Change virt6 repos to new format (virt6-xen-{44,46}-{testing,candidate})
+
+* Tue Sep 01 2015 George Dunlap <george.dunlap@citrix.com> - 7-6.centos
+- Add virt7-xen-46-* repos for 4.6 testing
+
 * Thu Jul 30 2015 George Dunlap <george.dunlap@eu.citrix.com> - 7-5.centos
 - Fix grub-bootxen.sh script
 
