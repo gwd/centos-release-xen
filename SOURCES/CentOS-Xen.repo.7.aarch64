@@ -1,0 +1,12 @@
+# CentOS Experimental repository
+
+# This repository contains experimental packages that may change quickly, and carry no expectation of reliability of upgrades. Use this repository with caution, as packages inside may be broken.
+
+[CentOS-Virt-Xen]
+name=CentOS-$releasever - xen
+baseurl=http://mirror.centos.org/altarch/$releasever/xen/$basearch/
+gpgcheck=1
+enabled=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+
+

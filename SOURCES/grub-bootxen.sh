@@ -25,13 +25,9 @@ function config_add
     fi
 }
 
-if [ "$XEN_KERNEL_ARGS" == "" ]; then
-  XEN_KERNEL_ARGS="dom0_mem=1024M,max:1024M cpuinfo com1=115200,8n1 console=com1,tty loglvl=all guest_loglvl=all"
-fi
-
 if [ -e /etc/default/grub ] ; then
-    config_add /etc/default/grub GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT "console=hvc0 earlyprintk=xen nomodeset"
     config_add /etc/default/grub GRUB_CMDLINE_XEN_DEFAULT "$XEN_KERNEL_ARGS"
+    config_add /etc/default/grub GRUB_CMDLINE_LINUX_XEN_REPLACE_DEFAULT "$LINUX_XEN_KERNEL_ARGS"
 fi
 
 #convert BOOT_XEN_AS_DEFAULT to lowercase
@@ -48,8 +44,8 @@ if [ -e /etc/grub.d/20_linux_xen ] ; then
 fi
 
 #check for the xen.gz file
-if [ ! -e /boot/xen.gz ]; then
-  echo "No /boot/xen.gz, nothing more to do."
+if ! [[ -e /boot/xen.gz || -e /boot/xen ]]; then
+  echo "No /boot/xen.gz or /boot/xen, nothing more to do."
   exit 0
 fi 
 
@@ -58,7 +54,11 @@ XEN_KERNEL_MBARGS="--mbargs=$XEN_KERNEL_ARGS"
 grub1Config=$(readlink -f /etc/grub.conf)
 grub2Config=$(readlink -f /etc/grub2.cfg)
 
-if [ -e "$grub2Config" ] ; then
+if ! [[ -e "$grub2Config" ]] ; then
+    grub2Config=$(readlink -f /etc/grub2-efi.cfg)
+fi
+
+if [[ -e "$grub2Config" ]] ; then
     echo "Regenerating grub2 config"
     grub2-mkconfig -o $grub2Config
     echo "Setting Xen as the default"

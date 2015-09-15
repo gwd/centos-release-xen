@@ -2,12 +2,14 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: GPL
 Group: System Environment/Base
-Source1: CentOS-Xen.repo.%{?rhel}
-Source2: VirtSIG-Xen.repo.%{?rhel}
-Source3: xen-kernel
+Source1: CentOS-Xen.repo.%{?rhel}.%{_arch}
+%ifnarch aarch64
+Source2: VirtSIG-Xen.repo.%{?rhel}.%{_arch}
+%endif
+Source3: xen-kernel.%{_arch}
 Source4: grub-bootxen.sh
 URL: http://wiki.centos.org/QaWiki/Xen4
 
@@ -15,10 +17,10 @@ Provides: centos-release-xen
 
 BuildRoot: %{_tmppath}/centos-release-xen-root
 
-ExclusiveArch: x86_64
+ExclusiveArch: x86_64 aarch64
 
 %description
-yum Configs and some docs on the Xen-4 stack included in CentOS
+yum Configs and some docs on the Xen stack included \in CentOS
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -27,7 +29,9 @@ mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
 install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+%ifnarch aarch64
 install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/VirtSIG-Xen.repo
+%endif
 install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
 install -m 744 %{SOURCE4} $RPM_BUILD_ROOT/%{_bindir}
 
@@ -42,6 +46,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Sep 15 2015 George Dunlap <george.dunlap@citrix.com> - 7-8.centos
+- Configure for aarch64 systems
+
 * Tue Sep 08 2015 George Dunlap <george.dunlap@citrix.com> - 7-7.centos
 - Change virt6 repos to new format (virt6-xen-{44,46}-{testing,candidate})
 
