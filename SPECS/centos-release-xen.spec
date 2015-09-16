@@ -2,7 +2,7 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: GPL
 Group: System Environment/Base
 Source1: CentOS-Xen.repo.%{?rhel}.%{_arch}
@@ -18,6 +18,9 @@ Provides: centos-release-xen
 BuildRoot: %{_tmppath}/centos-release-xen-root
 
 ExclusiveArch: x86_64 aarch64
+
+# This should pull in centos-release-virt-common
+Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
 
 %description
 yum Configs and some docs on the Xen stack included \in CentOS
@@ -46,6 +49,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 16 2016 George Dunlap <george.dunlap@citrix.com> - 7-9.centos
+- Add dependency on Virt SIG gpg key
+
 * Tue Sep 15 2015 George Dunlap <george.dunlap@citrix.com> - 7-8.centos
 - Configure for aarch64 systems
 
