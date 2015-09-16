@@ -9,7 +9,6 @@ Source1: CentOS-Xen.repo.%{?rhel}.%{_arch}
 %ifnarch aarch64
 Source2: VirtSIG-Xen.repo.%{?rhel}.%{_arch}
 %endif
-Source3: xen-kernel.%{_arch}
 Source4: grub-bootxen.sh
 URL: http://wiki.centos.org/QaWiki/Xen4
 
@@ -35,7 +34,6 @@ install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 %ifnarch aarch64
 install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/VirtSIG-Xen.repo
 %endif
-install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/sysconfig/xen-kernel
 install -m 744 %{SOURCE4} $RPM_BUILD_ROOT/%{_bindir}
 
 %clean
@@ -45,12 +43,12 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root)
 %config(noreplace) /etc/yum.repos.d/*
 %{_bindir}/grub-bootxen.sh
-%config(noreplace) /etc/sysconfig/xen-kernel
 
 
 %changelog
 * Wed Sep 16 2016 George Dunlap <george.dunlap@citrix.com> - 7-9.centos
 - Add dependency on Virt SIG gpg key
+- Shifted /etc/sysconfig/xen-kernel to xen package
 
 * Tue Sep 15 2015 George Dunlap <george.dunlap@citrix.com> - 7-8.centos
 - Configure for aarch64 systems
