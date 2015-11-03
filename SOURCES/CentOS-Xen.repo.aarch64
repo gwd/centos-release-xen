@@ -2,7 +2,7 @@
 
 # This repository contains experimental packages that may change quickly, and carry no expectation of reliability of upgrades. Use this repository with caution, as packages inside may be broken.
 
-[CentOS-Virt-Xen]
+[centos-virt-xen]
 name=CentOS-$releasever - xen
 baseurl=http://mirror.centos.org/altarch/$releasever/xen/$basearch/
 gpgcheck=1

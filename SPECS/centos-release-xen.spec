@@ -2,13 +2,12 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 9%{?dist}
+Release: 10%{?dist}
 License: GPL
 Group: System Environment/Base
-Source1: CentOS-Xen.repo.%{?rhel}.%{_arch}
-%ifnarch aarch64
-Source2: VirtSIG-Xen.repo.%{?rhel}.%{_arch}
-%endif
+# Include both so that the same srpm builds on both x86_64 and aarch64
+Source1: CentOS-Xen.repo.x86_64
+Source2: CentOS-Xen.repo.aarch64
 Source4: grub-bootxen.sh
 URL: http://wiki.centos.org/QaWiki/Xen4
 
@@ -30,9 +29,11 @@ mkdir -p $RPM_BUILD_ROOT/etc
 mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
+%ifarch x86_64
 install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
-%ifnarch aarch64
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/VirtSIG-Xen.repo
+%endif
+%ifarch aarch64
+install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 %endif
 install -m 744 %{SOURCE4} $RPM_BUILD_ROOT/%{_bindir}
 
@@ -41,11 +42,16 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/yum.repos.d/*
+%config(noreplace) /etc/yum.repos.d/CentOS-Xen.repo
 %{_bindir}/grub-bootxen.sh
 
 
 %changelog
+* Tue Nov  3 2016 George Dunlap <george.dunlap@citrix.com> - 7-10.centos
+- Removed CBS repositories
+- Moved C6 repos to Virt SIG layout
+- Include all files so we can build the same srpm on any arch
+
 * Wed Sep 16 2016 George Dunlap <george.dunlap@citrix.com> - 7-9.centos
 - Add dependency on Virt SIG gpg key
 - Shifted /etc/sysconfig/xen-kernel to xen package
