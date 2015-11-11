@@ -2,7 +2,7 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 10%{?dist}
+Release: 11%{?dist}
 License: GPL
 Group: System Environment/Base
 # Include both so that the same srpm builds on both x86_64 and aarch64
@@ -47,6 +47,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Nov 11 2016 George Dunlap <george.dunlap@citrix.com> - 7-11.centos
+- buildlogs (centos-virt-xen-testing) packages are not signed
+
 * Tue Nov  3 2016 George Dunlap <george.dunlap@citrix.com> - 7-10.centos
 - Removed CBS repositories
 - Moved C6 repos to Virt SIG layout

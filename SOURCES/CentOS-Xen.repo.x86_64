@@ -13,6 +13,6 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
 [centos-virt-xen-testing]
 name=CentOS-$releasever - xen - testing
 baseurl=http://buildlogs.centos.org/centos/$releasever/virt/$basearch/xen
-gpgcheck=1
+gpgcheck=0
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
