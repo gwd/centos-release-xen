@@ -64,18 +64,45 @@ if [[ -e "$grub2Config" ]] ; then
     echo "Setting Xen as the default"
     grub2-set-default 0
 elif [ -e "$grub1Config" ] ; then
-    echo "Updating grub config"
-    if [ "$kver" = "" ]; then 
+    # We only need to add a stanza if:
+    # 1. We're installing Xen and there is no xen.gz stanza
+    # 2. We're installing a new kernel
+    #
+    # If called when installing xen, it will not have a kver; if
+    # called from a new kernel, it will.
+    # 
+    # If called from xen, and xen is not installed, install a Xen
+    # stanza with kernel which is currently default.
+    #
+    # If called from a new kernel, install a new Xen stanza with the
+    # kernel version being installed (found in kver).
+    if [[ -z "$kver" ]]; then
+	# Called from xen-hypervisor install; get the kernel version
 	default=$(grubby --default-kernel)
 	kver=$(expr $default : '.*vmlinuz-\(.*\)')
+	# If this expression doesn't find anything, xen is already
+	# installed; nothing to do.
+	if [[ -z "$kver" ]] ; then
+	    echo "Xen already installed (default $default kver $kver), nothing to do"
+	    exit 0
+	fi
 	initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
     else
 	default="/boot/vmlinuz-$kver"
-	initrd=$(grubby --info $default | sed -ne 's/^initrd=//p')
+	initrd="/boot/initramfs-$kver.img"
     fi
 
-    [ -n "$kver" ] || exit 0
+    if [[ ! -e $default ]] ; then
+	echo "$0: Strange, can't find kernel $default"
+	exit 0
+    fi
 
+    if [[ ! -e $initrd ]] ; then
+	echo "$0: Strange, can't find initrd $default"
+	exit 0
+    fi
+
+    echo "Installing xen.gz stanza for kver $kver (kernel $default initrd $initrd)"
     new-kernel-pkg --install --package kernel --multiboot=/boot/xen.gz "$XEN_KERNEL_MBARGS" --initrdfile=$initrd $kver
 else
     echo "Don't know how to update bootloader."

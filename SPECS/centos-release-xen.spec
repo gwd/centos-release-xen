@@ -2,7 +2,7 @@ Summary: CentOS Xen Support repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 7
-Release: 11%{?dist}
+Release: 12%{?dist}
 License: GPL
 Group: System Environment/Base
 # Include both so that the same srpm builds on both x86_64 and aarch64
@@ -47,15 +47,19 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Nov 11 2016 George Dunlap <george.dunlap@citrix.com> - 7-11.centos
+* Wed Jan 20 2016 George Dunlap <george.dunlap@citrix.com> - 7-12.centos
+- Fix bug \in grub-bootxen.sh that caused no initrd line to be installed
+  when installing or upgrading a kernel when xen was already installed
+
+* Wed Nov 11 2015 George Dunlap <george.dunlap@citrix.com> - 7-11.centos
 - buildlogs (centos-virt-xen-testing) packages are not signed
 
-* Tue Nov  3 2016 George Dunlap <george.dunlap@citrix.com> - 7-10.centos
+* Tue Nov  3 2015 George Dunlap <george.dunlap@citrix.com> - 7-10.centos
 - Removed CBS repositories
 - Moved C6 repos to Virt SIG layout
 - Include all files so we can build the same srpm on any arch
 
-* Wed Sep 16 2016 George Dunlap <george.dunlap@citrix.com> - 7-9.centos
+* Wed Sep 16 2015 George Dunlap <george.dunlap@citrix.com> - 7-9.centos
 - Add dependency on Virt SIG gpg key
 - Shifted /etc/sysconfig/xen-kernel to xen package
 
