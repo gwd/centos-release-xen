@@ -1,14 +1,19 @@
-Summary: CentOS Xen Support repo configs
+Summary: CentOS Virt SIG Xen repo configs
 Name: centos-release-xen
 Epoch: 10
-Version: 7
-Release: 12%{?dist}
+Version: 8
+Release: 1%{?dist}
 License: GPL
 Group: System Environment/Base
-# Include both so that the same srpm builds on both x86_64 and aarch64
-Source1: CentOS-Xen.repo.x86_64
-Source2: CentOS-Xen.repo.aarch64
-Source4: grub-bootxen.sh
+# centos-release-xen-$version.XX.$arch should copy
+# CentOS-Xen-$version.repo.$arch to CentOS-Xen-$version.repo.
+#
+# centos-release-xen should copy one of those $version's to
+# CentOS-Xen.repo
+Source144: CentOS-Xen-44.repo.x86_64
+Source146: CentOS-Xen-46.repo.x86_64
+Source246: CentOS-Xen-46.repo.aarch64
+Source300: grub-bootxen.sh
 URL: http://wiki.centos.org/QaWiki/Xen4
 
 Provides: centos-release-xen
@@ -21,7 +26,41 @@ ExclusiveArch: x86_64 aarch64
 Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
 
 %description
-yum Configs and some docs on the Xen stack included \in CentOS
+yum configs and scripts to allow easy installation of Xen on CentOS.
+
+NOTE This package may change major versions of Xen automatically on
+yum update.  If this is not the behavior you want, please install the
+sub-package specific to the version of xen you want to use.  (At the
+moment this is centos-release-xen-44 or centos-release-xen-46).
+
+%package 44
+Summary: CentOS Virt Sig Xen repo configs for Xen 4.4
+Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
+Conflicts: centos-release-xen-46
+Conflicts: centos-release-xen
+
+%description 44
+yum configs and scripts to allow easy installation of Xen 4.4 on CentOS.
+
+NOTE This package will not update automatically to newer Xen releases;
+you will have to manually remove this package and install the newer
+version.  If this is not the behavior you want, please install the
+generic package (centos-release-xen).
+
+%package 46
+Summary: CentOS Virt Sig Xen repo configs for Xen 4.6
+Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
+Conflicts: centos-release-xen-44
+Conflicts: centos-release-xen
+
+%description 46
+yum configs and scripts to allow easy installation of Xen 4.6 on CentOS.
+
+NOTE This package will not update automatically to newer Xen releases;
+you will have to manually remove this package and install the newer
+version.  If this is not the behavior you want, please install the
+generic package (centos-release-xen).
+
 
 %install
 rm -rf $RPM_BUILD_ROOT
@@ -30,12 +69,15 @@ mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
 %ifarch x86_64
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-44.repo
+install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 %endif
 %ifarch aarch64
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 %endif
-install -m 744 %{SOURCE4} $RPM_BUILD_ROOT/%{_bindir}
+install -m 744 %{SOURCE300} $RPM_BUILD_ROOT/%{_bindir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -45,8 +87,21 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen.repo
 %{_bindir}/grub-bootxen.sh
 
+%files 44
+%defattr(-,root,root)
+%config(noreplace) /etc/yum.repos.d/CentOS-Xen-44.repo
+%{_bindir}/grub-bootxen.sh
+
+%files 46
+%defattr(-,root,root)
+%config(noreplace) /etc/yum.repos.d/CentOS-Xen-46.repo
+%{_bindir}/grub-bootxen.sh
 
 %changelog
+* Mon Feb 15 2016 George Dunlap <george.dunlap@citrix.com> - 8-1.centos
+- Break out version-specific packages for those who don\'t want to update
+  automatically.
+
 * Wed Jan 20 2016 George Dunlap <george.dunlap@citrix.com> - 7-12.centos
 - Fix bug \in grub-bootxen.sh that caused no initrd line to be installed
   when installing or upgrading a kernel when xen was already installed
