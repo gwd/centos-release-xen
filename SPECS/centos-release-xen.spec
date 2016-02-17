@@ -10,6 +10,8 @@ Group: System Environment/Base
 #
 # centos-release-xen should copy one of those $version's to
 # CentOS-Xen.repo
+Source140: CentOS-Xen.repo.x86_64.44
+Source141: CentOS-Xen.repo.x86_64.46
 Source144: CentOS-Xen-44.repo.x86_64
 Source146: CentOS-Xen-46.repo.x86_64
 Source246: CentOS-Xen-46.repo.aarch64
@@ -24,42 +26,62 @@ ExclusiveArch: x86_64 aarch64
 
 # This should pull in centos-release-virt-common
 Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
+Requires: %{_bindir}/grub-bootxen.sh
 
 %description
 yum configs and scripts to allow easy installation of Xen on CentOS.
 
 NOTE This package may change major versions of Xen automatically on
 yum update.  If this is not the behavior you want, please install the
-sub-package specific to the version of xen you want to use.  (At the
-moment this is centos-release-xen-44 or centos-release-xen-46).
+sub-package specific to the version of xen you want to use and then
+remove this package.  (At the moment this is centos-release-xen-44 or
+		       centos-release-xen-46).
 
+%package common
+Summary: CentOS Virt Sig Xen support files
+
+%description common
+This contains the grub-bootxen.sh helper-script which enables the xen
+package to add itself to grub automatically.
+
+%if 0%{?centos_ver} <= 6
 %package 44
 Summary: CentOS Virt Sig Xen repo configs for Xen 4.4
 Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
-Conflicts: centos-release-xen-46
-Conflicts: centos-release-xen
+Requires: %{_bindir}/grub-bootxen.sh
 
 %description 44
 yum configs and scripts to allow easy installation of Xen 4.4 on CentOS.
 
+Multiple versions of centos-release-xen-NN can be installed at the
+same time; by default yum will choose the latest version of xen
+available across all repositories.
+
 NOTE This package will not update automatically to newer Xen releases;
-you will have to manually remove this package and install the newer
-version.  If this is not the behavior you want, please install the
-generic package (centos-release-xen).
+\if you don\'t have centos-release-xen installed, you will have to
+manually install the newer version of centos-release-xen-NN to get the
+newer version.  If this is not the behavior you want, please install
+the generic package (centos-release-xen).
+%endif
+
 
 %package 46
 Summary: CentOS Virt Sig Xen repo configs for Xen 4.6
 Requires: /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
-Conflicts: centos-release-xen-44
-Conflicts: centos-release-xen
+Requires: %{_bindir}/grub-bootxen.sh
 
 %description 46
 yum configs and scripts to allow easy installation of Xen 4.6 on CentOS.
 
-NOTE This package will not update automatically to newer Xen releases;
-you will have to manually remove this package and install the newer
-version.  If this is not the behavior you want, please install the
-generic package (centos-release-xen).
+Multiple versions of centos-release-xen-NN can be installed at the
+same time; by default yum will choose the latest version of xen
+available across all repositories.
+
+This package will not update automatically to newer Xen releases;
+\if you don\'t have centos-release-xen installed, you will have to
+manually install the newer version of centos-release-xen-NN to get the
+newer version.  If this is not the behavior you want, please install
+the generic package (centos-release-xen).
 
 
 %install
@@ -69,8 +91,14 @@ mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
 %ifarch x86_64
-install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+
+# For now, have centos-release-xen default to 44 for C6, 46 for C7.
+%if 0%{?centos_ver} <= 6
+install -m 644 %{SOURCE140} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-44.repo
+%else
+install -m 644 %{SOURCE141} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+%endif
 install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 %endif
 %ifarch aarch64
@@ -85,17 +113,19 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen.repo
+
+%files common
 %{_bindir}/grub-bootxen.sh
 
+%if 0%{?centos_ver} <= 6
 %files 44
 %defattr(-,root,root)
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen-44.repo
-%{_bindir}/grub-bootxen.sh
+%endif
 
 %files 46
 %defattr(-,root,root)
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen-46.repo
-%{_bindir}/grub-bootxen.sh
 
 %changelog
 * Mon Feb 15 2016 George Dunlap <george.dunlap@citrix.com> - 8-1.centos

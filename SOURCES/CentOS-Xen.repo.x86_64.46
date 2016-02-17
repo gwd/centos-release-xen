@@ -3,16 +3,16 @@
 # Please see http://wiki.centos.org/QaWiki/Xen4 for more 
 # information
 
-[centos-virt-xen-44]
+[centos-virt-xen]
 name=CentOS-$releasever - xen
-baseurl=http://mirror.centos.org/centos/$releasever/virt/$basearch/xen-44
+baseurl=http://mirror.centos.org/centos/$releasever/virt/$basearch/xen-46
 gpgcheck=1
 enabled=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
 
-[centos-virt-xen-44-testing]
+[centos-virt-xen-testing]
 name=CentOS-$releasever - xen - testing
-baseurl=http://buildlogs.centos.org/centos/$releasever/virt/$basearch/xen-44
+baseurl=http://buildlogs.centos.org/centos/$releasever/virt/$basearch/xen-46
 gpgcheck=0
 enabled=0
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-Virtualization
