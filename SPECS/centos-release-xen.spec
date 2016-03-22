@@ -2,7 +2,7 @@ Summary: CentOS Virt SIG Xen repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 8
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL
 Group: System Environment/Base
 # centos-release-xen-$version.XX.$arch should copy
@@ -92,13 +92,10 @@ mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
 %ifarch x86_64
 
-# For now, have centos-release-xen default to 44 for C6, 46 for C7.
 %if 0%{?centos_ver} <= 6
-install -m 644 %{SOURCE140} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-44.repo
-%else
-install -m 644 %{SOURCE141} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 %endif
+install -m 644 %{SOURCE141} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 %endif
 %ifarch aarch64
@@ -128,6 +125,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen-46.repo
 
 %changelog
+* Tue Mar 22 2016 George Dunlap <george.dunlap@citrix.com> - 8-2.centos
+- Point centos-release-xen to Xen 4.6 for CentOS 6
+
 * Mon Feb 15 2016 George Dunlap <george.dunlap@citrix.com> - 8-1.centos
 - Break out version-specific packages for those who don\'t want to update
   automatically.
