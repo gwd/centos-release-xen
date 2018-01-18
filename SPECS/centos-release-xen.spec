@@ -2,7 +2,7 @@ Summary: CentOS Virt SIG Xen repo configs
 Name: centos-release-xen
 Epoch: 10
 Version: 8
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: GPL
 Group: System Environment/Base
 # centos-release-xen-$version.XX.$arch should copy
@@ -10,6 +10,7 @@ Group: System Environment/Base
 #
 # centos-release-xen should copy one of those $version's to
 # CentOS-Xen.repo
+Source100: CentOS-Xen-dependencies.repo.x86_64
 Source144: CentOS-Xen-44.repo.x86_64
 Source146: CentOS-Xen-46.repo.x86_64
 Source148: CentOS-Xen-48.repo.x86_64
@@ -107,15 +108,21 @@ mkdir -p $RPM_BUILD_ROOT/etc
 mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
-%ifarch x86_64
 
+%ifarch x86_64
+# Install external dependencies
+install -m 644 %{SOURCE100} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-dependencies.repo
+
+# Install per-release files
 %if 0%{?centos_ver} <= 6
 install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-44.repo
 %endif
 install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 install -m 644 %{SOURCE148} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-48.repo
+
 %endif
+
 %ifarch aarch64
 install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
@@ -132,6 +139,11 @@ rm -rf $RPM_BUILD_ROOT
 %files common
 %{_bindir}/grub-bootxen.sh
 
+%ifarch x86_64
+%defattr(-,root,root)
+%config(noreplace) /etc/yum.repos.d/CentOS-Xen-dependencies.repo
+%endif
+
 %if 0%{?centos_ver} <= 6
 %files 44
 %defattr(-,root,root)
@@ -147,6 +159,9 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/CentOS-Xen-48.repo
 
 %changelog
+* Thu Jan 18 2018 George Dunlap <george.dunlap@citrix.com> - 8-4.centos
+- Add 'dependencies' repo, to selectively enable packages from epel
+
 * Mon Nov 21 2016 George Dunlap <george.dunlap@citrix.com> - 8-3.centos
 - Add repository for 4.8.  Leave default at 4.6 for now.
 
