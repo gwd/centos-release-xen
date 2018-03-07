@@ -109,25 +109,35 @@ mkdir -p -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/sysconfig
 mkdir -p -m 755 $RPM_BUILD_ROOT/%{_bindir}
 
+## Common files
+install -m 744 %{SOURCE300} $RPM_BUILD_ROOT/%{_bindir}
+
+## x86_64 repositories
 %ifarch x86_64
 # Install external dependencies
 install -m 644 %{SOURCE100} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-dependencies.repo
 
-# Install per-release files
+# Install per-release files.
 %if 0%{?centos_ver} <= 6
 install -m 644 %{SOURCE144} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-44.repo
 %endif
-install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
 install -m 644 %{SOURCE148} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-48.repo
 
+# Install 4.6 as the 'default' for x86_64.
+# Change this line (and the comment above) when you want to change the default release.
+install -m 644 %{SOURCE146} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
+
 %endif
 
+## aarch64 repositories
 %ifarch aarch64
-install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen-46.repo
+
+# Install 4.6 as the 'default' for aarch64.
+# Change this line (and the comment above) when you want to change the default release.
+install -m 644 %{SOURCE246} $RPM_BUILD_ROOT/etc/yum.repos.d/CentOS-Xen.repo
 %endif
-install -m 744 %{SOURCE300} $RPM_BUILD_ROOT/%{_bindir}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
